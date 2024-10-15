@@ -23,26 +23,31 @@ export default function Header({ title, count = 1, avatarInitials, iconType }) {
         {title} <span className="count">{count}</span>
       </div>
       <div className="actions">
-        <button className="action-button">+</button>
-        <button className="action-button">...</button>
+        <button className="action-button">
+            <img className='icon-img' src='/add.svg'></img>
+        </button>
+        <button className="action-button">
+        <img className='icon-img' src='/3 dot menu.svg'></img>
+        </button>
       </div>
 
       <style jsx>{`
         .header {
           display: flex;
           align-items: center;
+          justify-content:space-between;
           padding: 8px;
           background-color: #f9fafb;
           border-bottom: 1px solid #e5e7eb;
         }
         .icon-wrapper {
-          margin-right: 8px;
+          /* margin-right: 2px; */
           display: flex;
           align-items: center;
         }
         .icon {
-          width: 24px;
-          height: 24px;
+          width: 12px;
+          height: 12px;
         }
         .title {
           font-size: 14px;
@@ -56,14 +61,19 @@ export default function Header({ title, count = 1, avatarInitials, iconType }) {
         }
         .actions {
           display: flex;
-          gap: 5px;
+          /* gap: 3px; */
         }
         .action-button {
           background: none;
           border: none;
           cursor: pointer;
           color: #6b7280;
-          font-size: 16px;
+          font-size: 12px;
+          
+        }
+        .icon-img{
+            width: 12px;
+            height: 12px;
         }
       `}</style>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import TaskCard from './TaskCard';  // Assuming you have the TaskCard component ready
 import ColumnHeader from './ColumnHeader';
 
@@ -8,7 +8,31 @@ export default function ProjectBoard() {
   const [groupBy, setGroupBy] = useState(localStorage.getItem('groupOption') || 'status');  // Group by default status
   const [sortBy, setSortBy] = useState(localStorage.getItem('sortOption') || 'priority');  // Sort by priority by default
   const [loading, setLoading] = useState(true);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const dropdownRef = useRef(null);
 
+//   const toggleDropdown = () => {
+//     setDropdownVisible(!dropdownVisible);
+//   };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (dropdownVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownVisible]);
+
+  
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -88,11 +112,15 @@ export default function ProjectBoard() {
     return <p>Loading...</p>;
   }
 
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
   const groupedTasks = groupTasks();
 
   return (
     <div className="project-board">
-      <header className="board-header">
+      {/* <header className="board-header">
         <div className="dropdown">
           <span>Group by: </span>
           <select value={groupBy} onChange={handleGroupByChange}>
@@ -109,7 +137,73 @@ export default function ProjectBoard() {
             <option value="title">Title</option>
           </select>
         </div>
-      </header>
+      </header> */}
+      <header className="board-header">
+      <button className="dropdown-button" onClick={toggleDropdown}>
+        Display Options
+      </button>
+      {dropdownVisible && (
+        <div className="dropdown-menu" ref={dropdownRef}>
+          <div className="dropdown">
+            <span>Group by: </span>
+            <select value={groupBy} onChange={handleGroupByChange}>
+              <option value="status">Status</option>
+              <option value="user">User</option>
+              <option value="priority">Priority</option>
+            </select>
+          </div>
+
+          <div className="dropdown">
+            <span>Sort by: </span>
+            <select value={sortBy} onChange={handleSortByChange}>
+              <option value="priority">Priority</option>
+              <option value="title">Title</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .dropdown-button {
+          padding: 8px 16px;
+          font-size: 16px;
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .dropdown-menu {
+          margin-top: 80px;
+          border: 1px solid #ccc;
+          padding: 15px;
+          background-color: #f9fafb;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          position: absolute;
+          z-index: 10;
+          min-width: 200px;
+          /* padding-bottom:20px; */
+        }
+
+        .dropdown {
+          margin-bottom: 15px;
+        }
+
+        .dropdown select {
+          padding: 5px;
+          font-size: 14px;
+          border-radius: 4px;
+          border: 1px solid #ddd;
+        }
+
+        .dropdown span {
+          font-weight: bold;
+          margin-right: 10px;
+        }
+      `}</style>
+    </header>
 
       <div className="board-columns">
         {Object.entries(groupedTasks).map(([group, groupTasks]) => (
